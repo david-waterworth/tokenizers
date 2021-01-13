@@ -189,11 +189,14 @@ impl UnigramTrainer {
         let c_sentence_boundary = '\0';
         let k_sentence_boundary = '\0'.to_string();
         for (string, n) in sentences {
-            flat_string.push_str(&string);
-            // XXX
-            // Comment suggests we add sentence boundary, but it seems to be missing from actual
-            // code in spm.
-            flat_string.push_str(&k_sentence_boundary);
+            for _i in 1..*n {
+                flat_string.push_str(&string);
+                // XXX
+                // Comment suggests we add sentence boundary, but it seems to be missing from actual
+                // code in spm.
+                flat_string.push_str(&k_sentence_boundary);                
+            }
+
             for c in string.chars() {
                 if c != c_sentence_boundary {
                     *all_chars.entry(c).or_insert(0) += n;
