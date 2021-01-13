@@ -27,7 +27,7 @@ use tokenizers::{Model, TokenizerBuilder};
 //     assert_eq!(tokenizer.get_model().dropout, Some(0.1));
 //     assert_eq!(tokenizer.get_model().unk_token, Some("[UNK]".to_string()));
 // }
-
+use tokenizers::{AddedToken};
 use tokenizers::models::unigram::{UnigramTrainer, Unigram};
 use tokenizers::normalizers::{strip::Strip};
 use tokenizers::pre_tokenizers::delimiter::CharDelimiterSplit;
@@ -37,6 +37,14 @@ fn unigram_training() {
     let mut trainer = UnigramTrainer::builder()
         .show_progress(true)
         .vocab_size(vocab_size)
+        .special_tokens(vec![
+            AddedToken::from(String::from("<s>"), true),
+            AddedToken::from(String::from("<pad>"), true),
+            AddedToken::from(String::from("</s>"), true),
+            AddedToken::from(String::from("<unk>"), true),
+            AddedToken::from(String::from("<mask>"), true),
+        ])
+        .unk_token(Some("<unk>".into()))
         .build()
         .unwrap();
     

@@ -224,7 +224,8 @@ impl UnigramTrainer {
                 if !self.is_valid_sentencepiece(string) {
                     return None;
                 }
-                let score = freq * string.len() as u32;
+                //let score = freq * string.len() as u32;
+                let score = freq as u32;
                 // if let Some(p) = &progress {
                 //     p.inc(1);
                 // }
