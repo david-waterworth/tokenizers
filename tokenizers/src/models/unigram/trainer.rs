@@ -200,7 +200,8 @@ impl UnigramTrainer {
                 }
             }
         }
-        let suffix = esaxx_rs::suffix(&flat_string).unwrap();
+        // Use rust esa with sentance boundary awareness
+        let suffix = esaxx_rs::suffix_rs(&flat_string, Some(c_sentence_boundary)).unwrap();
 
         //  Basic chars need to be in sentence pieces.
         let mut seed_sentencepieces: Vec<SentencePiece> = vec![];
@@ -748,5 +749,52 @@ mod tests {
         assert_approx_eq!(scores[0], -1.098, 0.01);
         // ln(2) - ln(3)
         assert_approx_eq!(scores[1], -0.405, 0.01);
+    }
+
+    #[test]
+    fn test_seed() {
+        let trainer = UnigramTrainerBuilder::default()
+            .show_progress(false)
+            .build()
+            .unwrap();
+
+        let sentences = vec![
+            ("cat".to_string(), 1),
+            ("bat".to_string(), 1),
+            ("sat".to_string(), 1),
+            ("fat".to_string(), 1),
+            ("fan".to_string(), 1),
+        ];
+
+        let required_chars = trainer.required_chars(&sentences);
+        assert_eq!(required_chars.len(), 7);
+
+        let progress = None;
+        let table = trainer
+            .make_seed_sentence_pieces(&sentences, &progress)
+            .unwrap();
+        assert_eq!(table.len(), 9);
+
+        let target_strings = vec!["a", "t", "f", "s", "n", "c", "b", "at", "fa"];
+
+        let strings: Vec<_> = table.iter().map(|(string, _)| string).collect();
+        assert_eq!(strings, target_strings);
+
+        let scores: Vec<_> = table.iter().map(|(_, score)| score).collect();
+        let target_scores = vec![
+            /*"a" */ -1.6863989535702288,
+            /*"t" */ -1.9095425048844386,
+            /*"f" */ -2.6026896854443837,
+            /*"s" */ -3.295836866004329,
+            /*"n" */ -3.295836866004329,
+            /*"c" */ -3.295836866004329,
+            /*"b" */ -3.295836866004329,
+            /*"at"*/ -1.2163953243244934,
+            /*"fa"*/ -1.9095425048844386,
+        ];
+
+        for (score, target_score) in scores.into_iter().zip(target_scores) {
+            assert_approx_eq!(*score, target_score, 0.01);
+        }
     }
 }
