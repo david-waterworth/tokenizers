@@ -204,7 +204,7 @@ impl UnigramTrainer {
             }
         }
         // Use rust esa with sentance boundary awareness
-        let suffix = esaxx_rs::suffix_rs(&flat_string, Some(c_sentence_boundary)).unwrap();
+        let suffix = esaxx_rs::suffix_rs(&flat_string).unwrap();
 
         //  Basic chars need to be in sentence pieces.
         let mut seed_sentencepieces: Vec<SentencePiece> = vec![];
