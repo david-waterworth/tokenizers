@@ -252,7 +252,10 @@ impl UnigramTrainer {
             }
         }
         to_log_prob(&mut seed_sentencepieces);
-        println!("seed sentencepieces: {}", seed_sentencepieces.len());
+        if let Some(p) = &_progress {
+            p.println(format!("seed sentencepieces: {}", seed_sentencepieces.len()));
+        }
+
         Ok(seed_sentencepieces)
     }
     fn prune_sentence_pieces(
