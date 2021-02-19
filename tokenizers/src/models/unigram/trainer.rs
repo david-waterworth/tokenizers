@@ -190,11 +190,13 @@ impl UnigramTrainer {
         let k_sentence_boundary = '\0'.to_string();
         for (string, n) in sentences {
             for _i in 1..*n {
-                flat_string.push_str(&string);
-                // XXX
-                // Comment suggests we add sentence boundary, but it seems to be missing from actual
-                // code in spm.
-                flat_string.push_str(&k_sentence_boundary);                
+                if !string.is_empty()  {
+                    flat_string.push_str(&string);
+                    // XXX
+                    // Comment suggests we add sentence boundary, but it seems to be missing from actual
+                    // code in spm.
+                    flat_string.push_str(&k_sentence_boundary);  
+                }              
             }
 
             for c in string.chars() {
@@ -250,6 +252,7 @@ impl UnigramTrainer {
             }
         }
         to_log_prob(&mut seed_sentencepieces);
+        println!("{seed sentencepieces}" seed_sentencepieces.len())
         Ok(seed_sentencepieces)
     }
     fn prune_sentence_pieces(
